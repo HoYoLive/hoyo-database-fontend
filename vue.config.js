@@ -10,12 +10,12 @@ module.exports = defineConfig({
       require('unplugin-auto-import/webpack')({
         resolvers: [ElementPlusResolver()]
       })
-    ],
-    options: {
-      title: "HoYoLive 数据库"
-    }
+    ]
   },
   devServer: {
     proxy: 'http://localhost:5010'
-  }
+  },
+  publicPath: process.env.NODE_ENV === 'production'
+    ? '/database/'
+    : './'
 })

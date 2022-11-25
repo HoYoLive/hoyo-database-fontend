@@ -1,7 +1,7 @@
 <template>
     <el-container style="height: 100%;">
         <el-header>
-            <el-affix><HeaderPage /></el-affix>
+            <HeaderPage />
         </el-header>
         <el-container>
             <el-aside width="300px">

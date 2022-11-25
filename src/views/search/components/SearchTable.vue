@@ -113,9 +113,11 @@ import { ref, computed } from 'vue'
 import type { TableColumnCtx } from 'element-plus/es/components/table/src/table-column/defaults'
 import { Download, VideoPlay } from '@element-plus/icons-vue'
 import { ElMessage, MessageHandler } from 'element-plus'
+import 'element-plus/es/components/message/style/index'
 import type { Column, TableV2Instance } from 'element-plus'
 import axios from 'axios'
 import parser from 'subtitles-parser'
+import { APIHost } from '@/host'
 
 // 定义录播数据结构
 interface LiveObj {
@@ -150,7 +152,7 @@ let currentLive : LiveObj // 当前录播对象
 /* 输入框部分 */
 // 角色列表 ["yaoyao"]
 axios({
-  url: '/database/characters',
+  url: APIHost + '/database/characters',
   method: 'get'
 }).then(res => {
   characters.value = res.data.character
@@ -158,7 +160,7 @@ axios({
 // 搜索事件
 const search = () => {
   axios({
-    url: '/database/ss',
+    url: APIHost + '/database/ss',
     method: 'get',
     params: {
       words: input.value,
@@ -224,7 +226,7 @@ const goVideo = (row: LiveObj) => {
 const handleDownload = (index: number, row: LiveObj) => {
   console.log(index, row)
   axios({
-    url: '/database/getsrt',
+    url: APIHost + '/database/getsrt',
     method: 'get',
     params: {
       srt: row.srt
@@ -292,7 +294,7 @@ const srtTableRef = ref<TableV2Instance>()
 const showDrawer = (row: LiveObj, column: TableColumnCtx<LiveObj>, cell: any, event: any) => {
   let srtLoadMsg : MessageHandler
   axios({
-    url: '/database/getsrt',
+    url: APIHost + '/database/getsrt',
     method: 'get',
     params: {
       srt: row.srt
@@ -305,7 +307,7 @@ const showDrawer = (row: LiveObj, column: TableColumnCtx<LiveObj>, cell: any, ev
       message: '字幕载入中'
     })
     return axios({
-      url: downloadList.value[downloadList.value.length - 1],
+      url: downloadList.value[0],
       method: 'get'
     })
   }).then(res => {
