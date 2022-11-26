@@ -378,7 +378,6 @@ const handleCurrentChange = (val: number) => {
 }
 .drawer {
   max-width: 100% !important;
-  min-width: 600px !important;
 }
 .input{
   max-width: 800px;
