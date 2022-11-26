@@ -1,12 +1,11 @@
 <template>
     <el-container style="height: 100%;">
         <el-header>
-            <HeaderPage />
+            <el-affix :offset="0"><HeaderPage v-model:show-menu="showMenu"/></el-affix>
         </el-header>
         <el-container>
-            <el-aside width="300px">
-                <AsidePage />
-            </el-aside>
+            <ResponsiveAside />
+            <AsideDrawer v-model:drawer="showMenu"/>
             <el-container class="container">
                 <el-main class="main">
                     <router-view />
@@ -21,9 +20,13 @@
 </template>
 
 <script lang="ts" setup>
+import { ref, computed, defineProps, defineEmits } from 'vue'
 import FooterPage from '@/components/FooterPage.vue'
 import HeaderPage from '@/components/HeaderPage.vue'
-import AsidePage from '@/components/AsidePage.vue'
+import AsideDrawer from '@/components/AsideDrawer.vue'
+import ResponsiveAside from '@/components/ResponsiveAside.vue'
+
+const showMenu = ref(false)
 </script>
 
 <style lang="scss" scoped>
@@ -33,10 +36,10 @@ import AsidePage from '@/components/AsidePage.vue'
 
 .footer {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     height: initial;
     box-sizing: border-box;
-    padding: 42px 200px 64px;
+    padding: 42px 64px 64px;
     background-color: #f4f4f5;
     margin-top: 64px;
 }

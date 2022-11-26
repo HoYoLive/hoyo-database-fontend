@@ -1,0 +1,37 @@
+export interface LiveObj {
+    date: string
+    time: string
+    source: string
+    video: string
+    p: number
+    type: string[]
+    title: string
+    srt: string
+    match: number
+}
+
+export interface srtObj {
+    id: string
+    startTime: string
+    endTime: string
+    text: string
+}
+
+const subtitleRename = (live: LiveObj) => {
+  return live ? `${live.date}_${live.video}_${live.p}_${live.title}.srt` : 'subtitle.srt'
+}
+const goVideo = (row: LiveObj) => {
+  let url
+  switch (row.source) {
+    case 'acfun':
+      url = `https://www.acfun.cn/v/${row.video}_${row.p}`
+      break
+    case 'bilibili':
+      url = `https://www.bilibili.com/video/${row.video}?p=${row.p}`
+      break
+  }
+  window.open(url, '_blank')
+}
+export {
+  subtitleRename, goVideo
+}

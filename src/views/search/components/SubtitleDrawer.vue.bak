@@ -1,0 +1,79 @@
+<template>
+    <el-drawer v-model="drawer" :title="subtitleRename(currentLive!)">
+      <el-button size="small" @click="goVideo(currentLive!)">
+        <el-icon><VideoPlay /></el-icon>
+        打开录播
+      </el-button>
+      <el-button size="small" v-for="(url,index) in downloadList" :key="index" @click="download(url)">
+        <el-icon>
+            <Download />
+        </el-icon>
+        下载地址 {{index + 1}}
+      </el-button>
+      <el-auto-resizer style="height: calc(100% - 100px); margin-top: 16px;">
+        <template #default="{ height, width }">
+      <el-table :data="filterSrtData" :height="height" :style="`width: ${width}px;`">
+        <el-table-column fixed prop="id" label="序号" width="70"/>
+        <el-table-column prop="startTime" label="时间" width="130"/>
+        <el-table-column>
+          <template #header>
+            <el-input v-model="input" size="small" placeholder="筛选" />
+          </template>
+          <template #default="scope">
+            {{scope.row.text}}
+          </template>
+        </el-table-column>
+      </el-table>
+      </template>
+      </el-auto-resizer>
+      <!--
+      <el-input size="small" v-model="input" placeholder="筛选" style="width: 200px; margin-left: 16px;" />
+      <el-auto-resizer style="height: calc(100% - 100px); margin-top: 16px;">
+        <template #default="{ height, width }">
+          <el-table-v2
+            ref="srtTableRef"
+            :columns="srtColumns"
+            :data="filterSrtData"
+            :width="width"
+            :height="height"
+            fixed
+          />
+        </template>
+      </el-auto-resizer>-->
+    </el-drawer>
+</template>
+
+<script lang="ts" setup>
+import { ref, computed, defineProps, PropType } from 'vue'
+import type { LiveObj, srtObj } from './types'
+import { subtitleRename, goVideo } from './types'
+
+const props = defineProps({
+  drawer: Boolean,
+  input: String,
+  downloadList: {
+    type: Object as PropType<string[]>,
+    require: true
+  },
+  currentLive: {
+    type: Object as PropType<LiveObj>,
+    require: true
+  },
+  srtData: {
+    type: Object as PropType<srtObj[]>,
+    require: true
+  }
+})
+const input = ref(props.input)
+const filterSrtData = computed(() =>
+    props.srtData!.filter(
+      (data: srtObj) =>
+        !input.value ||
+      data.text.toLowerCase().includes(input.value.toLowerCase())
+    )
+)
+</script>
+
+<style lang="scss" scoped>
+
+</style>

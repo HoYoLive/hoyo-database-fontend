@@ -7,8 +7,9 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    AsidePage: typeof import('./src/components/AsidePage.vue')['default']
-    ElAside: typeof import('element-plus/es')['ElAside']
+    AsideComponent: typeof import('./src/components/AsideComponent.vue')['default']
+    AsideDrawer: typeof import('./src/components/AsideDrawer.vue')['default']
+    ElAffix: typeof import('element-plus/es')['ElAffix']
     ElAutoResizer: typeof import('element-plus/es')['ElAutoResizer']
     ElBacktop: typeof import('element-plus/es')['ElBacktop']
     ElButton: typeof import('element-plus/es')['ElButton']
@@ -34,6 +35,7 @@ declare module '@vue/runtime-core' {
     ElTag: typeof import('element-plus/es')['ElTag']
     FooterPage: typeof import('./src/components/FooterPage.vue')['default']
     HeaderPage: typeof import('./src/components/HeaderPage.vue')['default']
+    ResponsiveAside: typeof import('./src/components/ResponsiveAside.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

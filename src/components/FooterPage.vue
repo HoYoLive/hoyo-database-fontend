@@ -1,4 +1,5 @@
 <template>
+    <!--
     <div class="footer-main">
         <h4>链接</h4>
         <a href="https://github.com/HoYoLive" class="footer-main-link" target="_blank">GitHub</a>
@@ -7,7 +8,19 @@
         <div class="footer-main-link">© 2022 HoYoLive Production All rights reserved.</div>
         <a href="https://beian.miit.gov.cn/" class="footer-main-link" target="_blank">互联网ICP备案：京ICP备2022030336号-1</a>
         <div class="footer-main-link">京公网安备 11010802040623号</div>
-    </div>
+    </div>-->
+    <el-row justify="space-between" :gutter="16" style="width: 100%">
+        <el-col :xs="24" :sm="10" :md="10" :lg="10" :xl="8" class="footer-main">
+            <h4>链接</h4>
+            <a href="https://github.com/HoYoLive" class="footer-main-link" target="_blank">GitHub</a>
+        </el-col>
+        <el-col :xs="0" :sm="0" :md="2" :lg="4" :xl="6"></el-col>
+        <el-col :xs="24" :sm="14" :md="12" :lg="10" :xl="10" class="footer-main end">
+            <div class="footer-main-link">© 2022 HoYoLive Production All rights reserved.</div>
+            <a href="https://beian.miit.gov.cn/" class="footer-main-link" target="_blank">互联网ICP备案：京ICP备2022030336号-1</a>
+            <div class="footer-main-link">京公网安备 11010802040623号</div>
+        </el-col>
+    </el-row>
 </template>
 
 <script lang="ts" setup>
@@ -18,7 +31,7 @@
 .footer-main {
     font-size: 0;
     vertical-align: top;
-    margin-right: 130px;
+    margin-bottom: 30px;
 
     h4 {
         font-size: 18px;
@@ -37,9 +50,6 @@
         text-decoration-line: none;
     }
     &.end {
-        text-align: end;
-        flex: 1 1 auto;
-
         .footer-main-link{
             color: #c8c9cc;
         }

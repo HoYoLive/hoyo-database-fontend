@@ -5,7 +5,7 @@
 
 <script setup lang="ts">
 // import { ref } from 'vue'
-import SearchPage from './components/SearchTable.vue'
+import SearchPage from './components/SearchPage.vue'
 </script>
 
 <style lang="scss">

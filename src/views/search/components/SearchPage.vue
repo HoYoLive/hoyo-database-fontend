@@ -1,18 +1,12 @@
 <template>
-    <el-input v-model="input" placeholder="请输入关键词" class="input" @change="search">
-        <template #prepend>
-        <el-select v-model="select" placeholder="Select" style="width: 115px">
-          <el-option label="All" value="" />
-          <el-option v-for="(c,index) in characters" :key="index" :label="c" :value="c" />
-        </el-select>
-        </template>
-    </el-input>
+    <SearchInput v-model:input="input" v-model:select="select" :characters="characters" @change="search" />
     <el-row justify="center">
-        <el-col style="max-width: 80%">
-            <el-table :data="tableData" tableLayout="auto" @sort-change="sortChange" @cell-dblclick="showDrawer">
-            <el-table-column prop=date sortable label="日期" width="90" />
-            <el-table-column prop=time label="时间" width="80" />
-            <el-table-column prop=video label="视频" width="120">
+        <el-col :xs="24" :sm="22" :md="22" :lg="18" :xl="16">
+            <el-table :data="tableData"
+            tableLayout="auto" @sort-change="sortChange" @cell-dblclick="showDrawer">
+            <el-table-column prop=date sortable label="日期" max-width="90" />
+            <el-table-column prop=time label="时间" max-width="80" />
+            <el-table-column prop=video label="视频" max-width="120">
                 <template #default="scope">
                     <el-link @click="goVideo(scope.row)" type="primary">{{scope.row.video}}</el-link>
                 </template>
@@ -33,8 +27,8 @@
                 <el-tag class="tag" v-for="t in scope.row.type" :key="t" :type="typeColorFormatter(t)" disable-transitions>{{ typeFormatter(t) }}</el-tag>
                 </template>
             </el-table-column>
-            <el-table-column fixed="right" prop=match label="匹配关键词数" sortable="custom" :formatter="getMatch" width="150"/>
-            <el-table-column fixed="right" align="center" label="下载" width="100">
+            <el-table-column prop=match label="匹配关键词数" sortable="custom" :formatter="getMatch" max-width="150"/>
+            <el-table-column align="center" label="下载" max-width="100">
                 <template #default="scope">
                   <el-button size="small" @click="handleDownload(scope.$index, scope.row)">
                     <el-icon>
@@ -44,13 +38,10 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-pagination
+        <ResponsivePagination
         v-model:current-page="currentPage"
         v-model:page-size="pageSize"
-        :page-sizes="[15, 30, 50, 100]"
-        layout="total, sizes, prev, pager, next, jumper"
         :total="tableAllData.length"
-        class="pag"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         />
@@ -64,7 +55,7 @@
         下载地址 {{index + 1}}
       </el-button>
     </el-dialog>
-    <el-drawer v-model="drawer" :title="subtitleRename(currentLive)">
+    <el-drawer v-model="drawer" :title="subtitleRename(currentLive)" custom-class="drawer" :destroy-on-close="true">
       <el-button size="small" @click="goVideo(currentLive)">
         <el-icon><VideoPlay /></el-icon>
         打开录播
@@ -109,6 +100,9 @@
 </template>
 
 <script lang="ts" setup>
+import SearchInput from './SearchInput.vue'
+import ResponsivePagination from './ResponsivePagination.vue'
+
 import { ref, computed } from 'vue'
 import type { TableColumnCtx } from 'element-plus/es/components/table/src/table-column/defaults'
 import { Download, VideoPlay } from '@element-plus/icons-vue'
@@ -372,15 +366,27 @@ const handleCurrentChange = (val: number) => {
 </script>
 
 <style lang="scss">
+@media screen and (min-width: 768px) {
+  .drawer {
+    width: 600px !important;
+  }
+}
+@media screen and (max-width: 767.98px) {
+  .drawer {
+    width: 100% !important;
+  }
+}
+.drawer {
+  max-width: 100% !important;
+  min-width: 600px !important;
+}
 .input{
   max-width: 800px;
   margin-bottom: 16px;
-}
-.pag {
-  margin-top: 16px;
-  justify-content: flex-end;
+  padding: 0 32px;
 }
 .tag {
   margin: 4px;
 }
+
 </style>
