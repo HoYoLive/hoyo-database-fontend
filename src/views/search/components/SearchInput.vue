@@ -1,7 +1,7 @@
 <template>
     <el-input v-model="input" placeholder="请输入关键词" class="input" @change="$emit('change')">
         <template #prepend>
-        <el-select v-model="select" placeholder="Select" style="width: 115px">
+        <el-select v-model="select" placeholder="Select" style="width: 115px" @change="$emit('change')">
           <el-option label="All" value="" />
           <el-option v-for="c in characters" :key="c" :label="c" :value="c" />
         </el-select>

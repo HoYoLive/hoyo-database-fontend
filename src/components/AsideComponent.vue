@@ -1,5 +1,5 @@
 <template>
-    <el-menu :default-active="$route.path" :router="true" class="aside" :collapse="collapse">
+    <el-menu :default-active="$route.path" :router="true" class="aside" :collapse="collapse" active-text-color="#67C23A">
         <el-menu-item class="aside-item" index="/" >
             <el-icon>
               <HomeFilled />

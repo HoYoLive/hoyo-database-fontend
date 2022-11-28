@@ -56,19 +56,15 @@
       </el-button>
     </el-dialog>
     <el-drawer v-model="drawer" :title="subtitleRename(currentLive)" custom-class="drawer" :destroy-on-close="true">
-      <el-button size="small" @click="goVideo(currentLive)">
-        <el-icon><VideoPlay /></el-icon>
-        打开录播
-      </el-button>
-      <el-button size="small" v-for="(url,index) in downloadList" :key="index" @click="download(url)">
-        <el-icon>
-            <Download />
-        </el-icon>
-        下载地址 {{index + 1}}
-      </el-button>
-      <el-auto-resizer style="height: calc(100% - 100px); margin-top: 16px;">
-        <template #default="{ height, width }">
-      <el-table :data="filterSrtData" :height="height" :style="`width: ${width}px;`">
+      <DrawerDescriptions
+      :current-live="currentLive"
+      :download-list="downloadList"
+      @download="download"
+      @go-video="goVideo"
+      />
+      <el-auto-resizer style="height: calc(100% - 150px); margin-top: 16px;">
+        <template #default="{ height }">
+      <el-table :data="filterSrtData" :height="height" >
         <el-table-column fixed prop="id" label="序号" width="70"/>
         <el-table-column prop="startTime" label="时间" width="130"/>
         <el-table-column>
@@ -102,8 +98,9 @@
 <script lang="ts" setup>
 import SearchInput from './SearchInput.vue'
 import ResponsivePagination from './ResponsivePagination.vue'
+import DrawerDescriptions from './DrawerDescriptions.vue'
 
-import { ref, computed } from 'vue'
+import { ref, computed, provide } from 'vue'
 import type { TableColumnCtx } from 'element-plus/es/components/table/src/table-column/defaults'
 import { Download, VideoPlay } from '@element-plus/icons-vue'
 import { ElMessage, MessageHandler } from 'element-plus'
@@ -142,6 +139,36 @@ const dialogDownloadVisible = ref(false) // 下载对话框可见性
 const downloadList = ref<string[]>([]) // 下载地址列表
 const drawer = ref(false)
 let currentLive : LiveObj // 当前录播对象
+
+// 标签命名与颜色设定
+const typeFormatter = (t: string) => {
+  switch (t) {
+    case 'game':
+      return '游戏'
+    case 'chat':
+      return '杂谈'
+    case 'paint':
+      return '绘画'
+    case 'song':
+      return '歌曲'
+  }
+  return '无'
+}
+provide('typeFormatter', typeFormatter)
+const typeColorFormatter = (t: string) => {
+  switch (t) {
+    case 'game':
+      return ''
+    case 'chat':
+      return 'success'
+    case 'paint':
+      return 'info'
+    case 'song':
+      return 'warning'
+  }
+  return ''
+}
+provide('typeColorFormatter', typeColorFormatter)
 
 /* 输入框部分 */
 // 角色列表 ["yaoyao"]
@@ -257,31 +284,7 @@ const download = (url: string) => {
 const filterTag = (value: string, row: LiveObj) => {
   return row.type.indexOf(value) > -1
 }
-// 标签命名与颜色设定
-const typeFormatter = (t: string) => {
-  switch (t) {
-    case 'game':
-      return '游戏'
-    case 'chat':
-      return '杂谈'
-    case 'paint':
-      return '绘画'
-    case 'song':
-      return '歌曲'
-  }
-}
-const typeColorFormatter = (t: string) => {
-  switch (t) {
-    case 'game':
-      return ''
-    case 'chat':
-      return 'success'
-    case 'paint':
-      return 'info'
-    case 'song':
-      return 'warning'
-  }
-}
+
 const srtData = ref<srtObj[]>([])
 const srtTableRef = ref<TableV2Instance>()
 // 展示具体字幕

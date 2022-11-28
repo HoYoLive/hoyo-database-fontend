@@ -1,6 +1,6 @@
 <template>
   <el-drawer v-model="drawer" :with-header="false" direction="ltr" size="300">
-    <el-menu :default-active="$route.path" :router="true" class="drawer-aside" @select="drawer = false">
+    <el-menu :default-active="$route.path" :router="true" class="drawer-aside" @select="drawer = false" active-text-color="#67C23A">
         <el-menu-item class="aside-item" index="/" >
             <el-icon>
               <HomeFilled />
