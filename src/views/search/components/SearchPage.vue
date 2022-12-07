@@ -3,7 +3,7 @@
     <el-row justify="center">
         <el-col :xs="24" :sm="22" :md="22" :lg="18" :xl="16">
             <el-table :data="tableData"
-            tableLayout="auto" @sort-change="sortChange" @cell-dblclick="showDrawer">
+            tableLayout="auto" @sort-change="sortChange" @cell-click="showDrawer">
             <el-table-column prop=date sortable label="日期" max-width="90" />
             <el-table-column prop=time label="时间" max-width="80" />
             <el-table-column prop=video label="视频" max-width="120">
@@ -30,7 +30,7 @@
             <el-table-column prop=match label="匹配关键词数" sortable="custom" :formatter="getMatch" max-width="150"/>
             <el-table-column align="center" label="下载" max-width="100">
                 <template #default="scope">
-                  <el-button size="small" @click="handleDownload(scope.$index, scope.row)">
+                  <el-button size="small" @click.stop="handleDownload(scope.$index, scope.row)">
                     <el-icon>
                         <Download />
                     </el-icon>
@@ -48,14 +48,18 @@
         </el-col>
     </el-row>
     <el-dialog v-model="dialogDownloadVisible" title="下载字幕">
-      <el-button v-for="(url,index) in downloadList" :key="index" @click="download(url)">
-        <el-icon>
-            <Download />
-        </el-icon>
-        下载地址 {{index + 1}}
-      </el-button>
+      <el-row justify="center" :gutter="16">
+        <el-col v-for="(url,index) in downloadList" :key="index" :xs="24" :sm="8" :md="8" :lg="6" :xl="4" style="margin-bottom: 16px">
+          <el-button @click="download(url)">
+            <el-icon>
+                <Download />
+            </el-icon>
+            下载地址 {{index + 1}}
+          </el-button>
+        </el-col>
+      </el-row>
     </el-dialog>
-    <el-drawer v-model="drawer" :title="subtitleRename(currentLive)" custom-class="drawer" :destroy-on-close="true">
+    <el-drawer v-model="drawer" :title="subtitleRename(currentLive)" custom-class="drawer" :destroy-on-close="true" @close="(srtLoading = true)">
       <DrawerDescriptions
       :current-live="currentLive"
       :download-list="downloadList"
@@ -64,34 +68,42 @@
       />
       <el-auto-resizer style="height: calc(100% - 150px); margin-top: 16px;">
         <template #default="{ height }">
-      <el-table :data="filterSrtData" :height="height" >
-        <el-table-column fixed prop="id" label="序号" width="70"/>
-        <el-table-column prop="startTime" label="时间" width="130"/>
-        <el-table-column>
-          <template #header>
-            <el-input v-model="input" size="small" placeholder="筛选" />
-          </template>
-          <template #default="scope">
-            {{scope.row.text}}
-          </template>
-        </el-table-column>
-      </el-table>
-      </template>
-      </el-auto-resizer>
-      <!--
-      <el-input size="small" v-model="input" placeholder="筛选" style="width: 200px; margin-left: 16px;" />
-      <el-auto-resizer style="height: calc(100% - 100px); margin-top: 16px;">
-        <template #default="{ height, width }">
-          <el-table-v2
-            ref="srtTableRef"
-            :columns="srtColumns"
-            :data="filterSrtData"
-            :width="width"
-            :height="height"
-            fixed
-          />
+          <el-skeleton style="width: 100%" :loading="srtLoading" animated>
+            <template #template>
+              <div style="text-align: left;">
+                <div style="padding: 9px 0 9px 0;">
+                  <el-skeleton-item variant="h1" style="width: 32px; margin: 0 26px 0 12px;" />
+                  <el-skeleton-item variant="h1" style="width: 32px; margin: 0 86px 0 12px;" />
+                  <el-skeleton-item variant="h1" style="width: calc(100% - 224px); margin: 0 12px 0 12px;" />
+                </div>
+                <el-scrollbar :height="(height - 42)">
+                  <div v-for="i in 20" :key="i" style="padding: 11px 0">
+                    <el-skeleton-item variant="text" style="width: 32px; margin: 0 26px 0 12px;" />
+                    <el-skeleton-item variant="text" style="width: 106px; margin: 0 12px 0 12px;" />
+                    <div style="display:inline-block; width: calc(100% - 224px); margin: 0 12px 0 12px;">
+                      <el-skeleton-item variant="text" :style="{width: Math.round(Math.random() * 80 + 20) + '%'}" />
+                    </div>
+                  </div>
+                </el-scrollbar>
+              </div>
+            </template>
+            <template #default>
+              <el-table :data="filterSrtData" :height="height" >
+                <el-table-column fixed prop="id" label="序号" width="70"/>
+                <el-table-column prop="startTime" label="时间" width="130"/>
+                <el-table-column>
+                  <template #header>
+                    <el-input v-model="input" size="small" placeholder="筛选" />
+                  </template>
+                  <template #default="scope">
+                    {{scope.row.text}}
+                  </template>
+                </el-table-column>
+              </el-table>
+            </template>
+          </el-skeleton>
         </template>
-      </el-auto-resizer>-->
+      </el-auto-resizer>
     </el-drawer>
 </template>
 
@@ -288,8 +300,9 @@ const filterTag = (value: string, row: LiveObj) => {
 const srtData = ref<srtObj[]>([])
 const srtTableRef = ref<TableV2Instance>()
 // 展示具体字幕
+const srtLoading = ref(true)
 const showDrawer = (row: LiveObj, column: TableColumnCtx<LiveObj>, cell: any, event: any) => {
-  let srtLoadMsg : MessageHandler
+  // let srtLoadMsg : MessageHandler
   axios({
     url: APIHost + '/database/getsrt',
     method: 'get',
@@ -300,9 +313,11 @@ const showDrawer = (row: LiveObj, column: TableColumnCtx<LiveObj>, cell: any, ev
     console.log(res.data)
     currentLive = row
     downloadList.value = res.data
-    srtLoadMsg = ElMessage({
-      message: '字幕载入中'
-    })
+    drawer.value = true
+  }).then(() => {
+    // srtLoadMsg = ElMessage({
+    //   message: '字幕载入中'
+    // })
     return axios({
       url: downloadList.value[0],
       method: 'get'
@@ -310,13 +325,13 @@ const showDrawer = (row: LiveObj, column: TableColumnCtx<LiveObj>, cell: any, ev
   }).then(res => {
     srtData.value = parser.fromSrt(res.data)
   }).then(() => {
-    drawer.value = true
+    srtLoading.value = false
   }).then(() => {
-    srtLoadMsg.close()
-    ElMessage({
-      message: '字幕载入完毕',
-      type: 'success'
-    })
+    // srtLoadMsg.close()
+    // ElMessage({
+    //   message: '字幕载入完毕',
+    //   type: 'success'
+    // })
     srtTableRef.value?.scrollToTop(0)
   })
 }
@@ -330,26 +345,9 @@ const filterSrtData = computed(() =>
       data.text.toLowerCase().includes(input.value.toLowerCase())
   )
 )
-const srtColumns: Column<srtObj>[] = [
-  {
-    key: 'id',
-    title: '序号',
-    dataKey: 'id',
-    width: 70
-  },
-  {
-    key: 'startTime',
-    title: '时间',
-    dataKey: 'startTime',
-    width: 130
-  },
-  {
-    key: 'text',
-    title: '文本',
-    dataKey: 'text',
-    width: 500
-  }
-]
+const randomWidth = () => {
+  return `width:${Math.round(Math.random() * 80 + 20)}%`
+}
 
 /* 分页部分 */
 // 每页数量改变
@@ -366,6 +364,7 @@ const handleCurrentChange = (val: number) => {
     (currentPage.value - 1) * pageSize.value,
     currentPage.value * pageSize.value)
 }
+
 </script>
 
 <style lang="scss">
@@ -382,11 +381,7 @@ const handleCurrentChange = (val: number) => {
 .drawer {
   max-width: 100% !important;
 }
-.input{
-  max-width: 800px;
-  margin-bottom: 16px;
-  padding: 0 32px;
-}
+
 .tag {
   margin: 4px;
 }

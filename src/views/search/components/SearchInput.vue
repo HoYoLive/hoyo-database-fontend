@@ -40,5 +40,9 @@ const select = computed({
 </script>
 
 <style lang="scss" scoped>
-
+.input{
+  max-width: 800px;
+  margin-bottom: 16px;
+  padding: 0 32px;
+}
 </style>
